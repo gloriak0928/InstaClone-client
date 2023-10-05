@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .menu{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 2px rgb(149, 138, 138) solid;
+            margin-bottom: 20px;
+        }
+        .profilePicture {
+            height: 20px;
+            width: 20px;
+        }
+        .userName {
+            font-weight: bold;
+            color: black;
+        }
+        .timeStamp{
+            color:rgb(149, 138, 138);
+            font-weight: bold;
+            text-align: right;
+        }
+        .postImage{
+            width: 800px;
+        }
+        .post{
+            width: 800px;
+            margin: auto;
+            margin-bottom: 20px;
+            border: 1px solid rgb(149, 138, 138);
+        }
+    </style>
+    <title>insta485</title>
+    
+</head>
+
+<body>
+    <!-- meru bar -->
+    <div class="menu">
+        <!--logo link-->
+        <div>
+            <div style="display: flex;">
+                <a href="/">
+                    <img src="/images/ins_logo_black.png" 
+                    alt="ins logo" 
+                    style="width:42px;height:42px;">
+                </a>
+                <p style="font-size: large;">&emsp;|&emsp;Insta485</p>
+            </div>
+        </div>
+
+        <!--explore and awdeorio-->
+        <div style="font-size: larger;">
+            <a href="/explore/" style="color: black;">
+                /explore
+            </a>
+            <a href="/users/{{logname}}/" style="color: black;">
+                /{{logname}}
+            </a>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="menu"> 
+            <div> <!--click on username/profile page-->
+                <img src="{{owner_img_url}}" alt="{{owner}}_profile_image" class="profilePicture" >
+                <a href="/users/{{owner}}/" class="userName">
+                {{owner}}
+                </a>
+            </div>
+            <!--click on timestamp-->
+            <a href="/posts/{{postid}}/" class="timeStamp">{{timestamp}}</a>
+        </div> 
+
+        <!--image-->
+        <img src="/uploads/{{img_url}}" class="postImage" alt="{{owner}}_post_image">
+        <!--numbers of likes-->
+        {% if likes == 1 %}
+            <p>{{likes}}&nbsp;like</p>
+        {% else %}
+            <p>{{likes}}&nbsp;likes</p>
+        {% endif %}
+        {% for comment in comments %}
+            <!--comments-->
+            <a href="/users/{{comment.owner}}/" class="userName">{{comment.owner}}</a>
+            {{comment.text}}
+            <!-- delete button -->
+            {% if comment.owner == logname %}
+            <form action="/comments/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="delete"/>
+                <input type="hidden" name="commentid" value="{{commentid}}"/>
+                <input type="submit" name="uncomment" value="delete"/>
+                </form>
+            {% endif %}
+        {% endfor %}
+        <!-- Like or Unlike button -->
+        {% if is_liked == true %}
+        <form action="/likes/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="unlike"/>
+            <input type="hidden" name="postid" value="{{ postid }}"/>
+            <input type="submit" name="unlike" value="unlike"/>
+        </form>
+        {% else %}
+        <form action="/likes/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="like"/>
+            <input type="hidden" name="postid" value="{{ postid }}"/>
+            <input type="submit" name="like" value="like"/>
+        </form>
+        {% endif %}
+        
+        <!-- Comment button -->
+        <form action="/comments/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create"/>
+            <input type="hidden" name="postid" value="{{ postid }}"/>
+            <input type="text" name="text" required/>
+            <input type="submit" name="comment" value="comment"/>
+        </form>
+        
+        <!-- Delete post -->
+        {% if owner == logname %}
+        <form action="/posts/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="delete"/>
+            <input type="hidden" name="postid" value="{{ postid }}"/>
+            <input type="submit" name="delete" value="delete this post"/>
+          </form>
+        {% endif %}
+    </div>
+</body>
+</html>

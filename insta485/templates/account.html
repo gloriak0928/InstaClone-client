@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>insta485</title>
+</head>
+<body>
+    <div class="menu">
+        <!--logo link-->
+        <div>
+            <div style="display: flex;">
+                <a href="/">
+                    <img src="/images/ins_logo_black.png" 
+                    alt="ins logo" 
+                    style="width:42px;height:42px;">
+                </a>
+                <p style="font-size: large;">&emsp;|&emsp;Insta485</p>
+                <p style="font-size: medium;">&emsp;|&emsp;Login</p>
+            </div>
+        </div>
+        <!--username and password-->
+        <form action="/accounts/?target={{url_for('show_index')}}" method="post" enctype="multipart/form-data">
+            <input type="text" name="username" required/>
+            <input type="password" name="password" required/>
+            <input type="submit" value="login"/>
+            <input type="hidden" name="operation" value="login"/>
+        </form>
+        <div>
+            Don't have an account? 
+            <a href="/accounts/create/">Sign up</a>
+        </div>
+</body>
+</html>

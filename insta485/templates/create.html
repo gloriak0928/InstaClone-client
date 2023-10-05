@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>insta485</title>
+</head>
+<body>
+    <div class="menu">
+        <!--logo link-->
+        <div>
+            <div style="display: flex;">
+                <a href="/">
+                    <img src="/images/ins_logo_black.png" 
+                    alt="ins logo" 
+                    style="width:42px;height:42px;">
+                </a>
+                <p style="font-size: large;">&emsp;|&emsp;Insta485</p>
+                <p style="font-size: medium;">&emsp;|&emsp;Login</p>
+            </div>
+        </div>
+        <!--username and password-->
+        <form action="/accounts/?target={{ url_for('show_index') }}" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required/>
+            <input type="text" name="fullname" required/>
+            <input type="text" name="username" required/>
+            <input type="text" name="email" required/>
+            <input type="password" name="password" required/>
+            <input type="submit" name="signup" value="sign up"/>
+            <input type="hidden" name="operation" value="create"/>
+          </form>
+        <div>
+            <p> Have an account? <a href="/accounts/login/">Log in</a> </p>
+        </div>
+</body>
+</html>

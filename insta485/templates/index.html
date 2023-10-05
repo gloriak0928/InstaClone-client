@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .menu{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 2px rgb(149, 138, 138) solid;
+            margin-bottom: 20px;
+        }
+        .profilePicture {
+            height: 20px;
+            width: 20px;
+        }
+        .userName {
+            font-weight: bold;
+            color: black;
+        }
+        .timeStamp{
+            color:rgb(149, 138, 138);
+            font-weight: bold;
+            text-align: right;
+        }
+        .postImage{
+            width: 500px;
+        }
+        .post{
+            width: 500px;
+            margin: auto;
+            margin-bottom: 20px;
+            border: 1px solid rgb(149, 138, 138);
+        }
+    </style>
+    <title>insta485</title>
+    
+</head>
+
+<body>
+    <!-- meru bar -->
+    <div class="menu">
+        <!--logo link-->
+        <div>
+            <div style="display: flex;">
+                <a href="/">
+                    <img src="/insta485/static/images/ins_logo_black.png" 
+                    alt="ins logo" 
+                    style="width:42px;height:42px;">
+                </a>
+                <p style="font-size: large;">&emsp;|&emsp;Insta485</p>
+            </div>
+        </div>
+
+        <!--explore and awdeorio-->
+        <div style="font-size: larger;">
+            <a href="/explore/" style="color: black;">
+                /explore
+            </a>
+            <a href="/users/{{logname}}/" style="color: black;">
+                /{{logname}}
+            </a>
+        </div>
+    </div>
+
+    {% for post in posts %}
+    <!-- post 1 -->
+        <div class="post">
+            <div class="menu"> 
+                <div> <!--click on username/profile page-->
+                    <img src="{{ post.owner_img_url }}" alt="{{post.owner}}_profile_image" class="profilePicture" >
+                    <a href="/users/{{post.owner}}/" class="userName">
+                    {{post.owner}}
+                    </a>
+                </div>
+                <!--click on timestamp-->
+                <a href="/posts/{{post.postid}}/" class="timeStamp">{{post.timestamp}}</a>
+            </div> 
+
+            <!--image-->
+            <img src="/uploads/{{ post.filename }}" class="postImage" alt="{{post.owner}}_post_image">
+            <!--numbers of likes-->
+            {% if post.likes == 1 %}
+                <p>{{post.likes}}&nbsp;like</p>
+            {% else %}
+                <p>{{post.likes}}&nbsp;likes</p>
+            {% endif%}
+            {% for comment in post.comments %}
+                <p><!--comments-->
+                    <a href="/users/{{comment.owner}}/" class="userName">
+                        {{comment.owner}}
+                    </a>
+                    {{comment.text}}
+                </p>
+            {% endfor %}
+        </div>
+        <!-- Like or unlike button -->
+        {% if post.is_liked == true %}
+            <form action="/likes/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="like"/>
+                <input type="hidden" name="postid" value="{{ post.postid }}"/>
+                <input type="submit" name="like" value="like"/>
+            </form>
+        {% else %}
+            <form action="/likes/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="operation" value="unlike"/>
+                <input type="hidden" name="postid" value="{{ post.postid }}"/>
+                <input type="submit" name="unlike" value="unlike"/>
+            </form>
+        {% endif %}
+        <!-- Comment button -->
+        <form action="/comments/?target={{ request_url }}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="operation" value="create"/>
+            <input type="hidden" name="postid" value="{{ post.postid }}"/>
+            <input type="text" name="text" required/>
+            <input type="submit" name="comment" value="comment"/>
+        </form>
+    {% endfor %}
+    <div id="reactEntry">
+        Loading ...
+    </div>
+    <!-- Load JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+</body>
+</html>

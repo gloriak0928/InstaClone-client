@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>insta485</title>
+</head>
+<body>
+    <div class="menu">
+        <!--logo link-->
+        <div>
+            <div style="display: flex;">
+                <a href="/">
+                    <img src="/images/ins_logo_black.png" 
+                    alt="ins logo" 
+                    style="width:42px;height:42px;">
+                </a>
+                <p style="font-size: large;">&emsp;|&emsp;Insta485</p>
+            </div>
+        </div>
+
+        <!--explore and logname-->
+        <div style="font-size: larger;">
+            <a href="/explore/" style="color: black;">
+                /explore
+            </a>
+            <a href="/users/{{logname}}/" style="color: black;">
+                /{{logname}}
+            </a>
+        </div>
+    </div>
+    <form action="/accounts/?target={{ url_for('show_account_create') }}" method="post" enctype="multipart/form-data">
+    <!-- <form action="/accounts/?target=/accounts/create/" method="post" enctype="multipart/form-data"> -->
+        <input type="submit" name="delete" value="confirm delete account"/>
+        <input type="hidden" name="operation" value="delete"/>
+    </form>
+    <a href="/accounts/edit/">Back to edit account</a>
+</body>
+</html>
