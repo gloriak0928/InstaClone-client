@@ -4,10 +4,11 @@ import flask
 import arrow
 import insta485
 from insta485.views.module import check_auth
-from insta485.views.module import get_stored_password_from_db
-from insta485.views.module import get_following_users, get_posts, get_post_only_id
-from insta485.views.module import get_owner_image_url
+from insta485.views.module import get_post_with_id
+from insta485.views.module import get_post_only_id
+from insta485.views.module import liked_post, get_likeid
 from insta485.views.module import get_post_comments, get_likes_count
+from insta485.views.module import get_comment_details_by_postid
 
 
 # Every REST API route should return 403 
@@ -22,8 +23,8 @@ def get_one_post():
 #这两个好像是同一个东西
 
 @insta485.app.route('/api/v1/posts/<int:postid_url_slug>/')
-def get_post(postid_url_slug):
-    """Return post on postid.
+def get_post_details(postid_url_slug):
+    """Return one post, including comments and likes.
 
     Example:
     {
@@ -38,16 +39,45 @@ def get_post(postid_url_slug):
     }
     """
     # FIXME: 不知道这部分是干嘛的
+    connection = insta485.model.get_db()
+    username = check_auth(connection)
+    post = get_post_with_id(connection, postid_url_slug)
+    if not post:
+        flask.abort(404)
+    comment_list = []
+    comments = get_comment_details_by_postid(connection, postid_url_slug)
+    for comment in comments:
+        comment_list.append({
+            "commentid": comment['commentid'],
+            "lognameOwnsThis": (username == comment['owner']),
+            "owner": comment['owner'],
+            "ownerShowUrl": f"/users/{comment['owner']}/",
+            "text": comment['text'],
+            "url": f"/api/v1/comments/{comment['commentid']}/"
+        })
+    comments = get_likeid(connection, username, postid_url_slug)
+    likes = {
+        "lognameLikesThis": (comments != None),
+        "numLikes": get_likes_count(connection, postid_url_slug),
+        "url": None
+        }
+    if likes["lognameLikesThis"]:
+        likes["url"] = f"/api/v1/likes/{comments['likeid']}/"
+    
+    # Interegate information
     context = {
-        "created": "2017-09-28 04:33:28",
-        "imgUrl": "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg",
-        "owner": "awdeorio",
+        "comments": comment_list,
+        "comments_url": f"/api/v1/comments/?postid={postid_url_slug}",
+        "created": post['created'],
+        "imgUrl": f"/uploads/{post['img_url']}",
+        "likes": likes,
+        "owner": username,
         "ownerImgUrl": "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg",
-        "ownerShowUrl": "/users/awdeorio/",
+        "ownerShowUrl": f"/users/{username}/",
         "postShowUrl": f"/posts/{postid_url_slug}/",
         "postid": postid_url_slug,
         "url": flask.request.path,
-    }
+        }
     return flask.jsonify(**context)
 
 
@@ -61,7 +91,6 @@ def get_post(postid_url_slug):
 @insta485.app.route('/api/v1/posts/')
 def get_N_posts():
     """Return 10 newest post urls and ids."""
-    # TODO: Need to finish
     connection = insta485.model.get_db()
     
     # Check if authorized

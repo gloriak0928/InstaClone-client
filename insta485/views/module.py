@@ -231,3 +231,12 @@ def check_follow(connection, username1, username2):
         (username1, username2)
     )
     return cur.fetchone()
+
+def get_comment_details_by_postid(connection, postid):
+    """Return comments information: commentid, owner, postid, text."""
+    cur = connection.execute(
+        "SELECT commentid, owner, postid, text FROM comments "
+        "WHERE postid = ? ORDER BY commentid",
+        (postid,)
+    )
+    return cur.fetchall()
