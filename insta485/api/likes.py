@@ -10,11 +10,12 @@ from insta485.views.module import get_like_details_by_likeid
 # Every REST API route should return 403 
 # if a user is not authenticated. 
 # The only exception is /api/v1/, which is publicly available.
-@insta485.app.route('/api/v1/likes/?postid=<postid>', methods=['POST'])
-def post_like_api(postid):
+@insta485.app.route('/api/v1/likes/', methods=['POST'])
+def post_like_api():
     """Create a new like for the specified post id."""
     connection = insta485.model.get_db()
     username = check_auth(connection)
+    postid = flask.request.args.get('postid')
     likeid = get_likeid(connection, username, postid)
     post = get_post_with_id(connection, postid)
     if not post:
