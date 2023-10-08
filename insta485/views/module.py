@@ -60,6 +60,7 @@ def get_posts(connection, user):
 
 def get_post_only_id(connection, user, post_lte, size, offset):
     """Get postid from database by username"""
+    
     cur = connection.execute(
         "SELECT postid FROM posts "
         "WHERE (owner = ? OR owner IN "

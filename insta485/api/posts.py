@@ -80,7 +80,7 @@ def get_N_posts_api():
     username = check_auth(connection)
     
     # Retrieve data
-    postid_lte = flask.request.args.get('postid_lte', default=3, type=int)
+    postid_lte = flask.request.args.get('postid_lte')
     size = flask.request.args.get('size', default=10, type=int)
     page = flask.request.args.get('page', default=0, type=int)
     if size <= 0 or page < 0:
@@ -89,15 +89,38 @@ def get_N_posts_api():
     next = ""
     if page != 0:
         offset = size*page
-    if size < postid_lte:
-        next = f"/api/v1/posts/?size={size}&page={page+1}&postid_lte={postid_lte}/"
+    # return str(postid_lte)
+    # connection.execute("PRAGMA foreign_keys = ON")
+    # connection.execute("DELETE FROM likes")
+    # connection.execute("DELETE FROM comments")
+    # connection.execute("DELETE FROM posts")
 
-    posts = get_post_only_id(connection, username, postid_lte, size, offset)
+    # Create exactly 11 posts
+    # for _ in range(11):
+    #     connection.execute(
+    #         "INSERT INTO posts(owner, filename) "
+    #         "VALUES('awdeorio', 'fox.jpg') ",
+    #     )
 
+    if not postid_lte:
+        postid_lte = connection.execute(
+            "SELECT postid FROM posts ORDER BY postid DESC"
+        ).fetchone()['postid']
+    posts = connection.execute(
+        "SELECT postid FROM posts "
+        "WHERE postid <= ? AND "
+        "(owner IN (SELECT username2 FROM following WHERE username1 = ?) OR "
+        "owner = ?) "
+        "ORDER BY postid DESC LIMIT ? OFFSET ?",
+        (postid_lte, username, username, size, offset,)
+        ).fetchall()
+
+    if size <= len(posts):
+        next = f"/api/v1/posts/?size={size}&page={page+1}&postid_lte={postid_lte}"
     for post in posts:
-        post["url"] = f"/api/v1/posts/{post['postid']}"
+        post["url"] = f"/api/v1/posts/{post['postid']}/"
     context = {"next": next,
                "results": posts,
-               "url": flask.request.path
+               "url": flask.url_for('get_N_posts_api', **flask.request.args)
                }
     return flask.jsonify(**context)

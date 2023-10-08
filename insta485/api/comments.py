@@ -4,6 +4,7 @@ import insta485
 import sqlite3
 from insta485.views.module import check_auth
 from insta485.views.module import get_post_with_id
+from insta485.views.module import get_comment_owner
 
 
 
@@ -14,7 +15,6 @@ from insta485.views.module import get_post_with_id
 def post_comment_api():
     """Create a new comment based on the text 
     in the JSON body for the specified post id."""
-    # TODO: Need to finish
     connection = insta485.model.get_db()
     username = check_auth(connection)
     postid = flask.request.args.get('postid')
@@ -42,6 +42,17 @@ def post_comment_api():
 
 
 @insta485.app.route('/api/v1/comments/<commentid>/', methods=['DELETE'])
-def delete_comment_api():
+def delete_comment_api(commentid):
     """Delete the comment based on the comment id."""
     # TODO: Need to finish
+    connection = insta485.model.get_db()
+    username = check_auth(connection)
+    comment_owner = get_comment_owner(connection, commentid)
+    if not comment_owner:
+        return flask.jsonify(), 404
+    elif comment_owner['owner'] != username:
+        return flask.jsonify(), 403
+    connection.execute(
+        "DELETE FROM comments WHERE commentid = ?", (commentid,)
+    )
+    return flask.jsonify(), 204
