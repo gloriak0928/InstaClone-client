@@ -1,5 +1,34 @@
 """Helper functions."""
+import hashlib
+import flask
 
+
+def check_auth(connection):
+    if flask.request.authorization:
+        # if it contains valid basic auth credentials
+        username = flask.request.authorization['username']
+        password = flask.request.authorization['password']
+        # Hash passwork and check password
+        stored_password = get_stored_password_from_db(connection, username)
+        if stored_password is None:
+            flask.abort(403)
+        hashed_password = stored_password['password']
+        salt = hashed_password.split('$')[1]
+        algorithm = 'sha512'
+        hash_obj = hashlib.new(algorithm)
+        password_salted = salt + password
+        hash_obj.update(password_salted.encode('utf-8'))
+        password_hash = hash_obj.hexdigest()
+        password_db_string = "$".join([algorithm, salt, password_hash])
+        if password_db_string != hashed_password:
+            flask.abort(403)
+    elif 'username' in flask.session:
+        # if it contains a valid session cookie
+        username = flask.session['username']
+    else :
+        # else: deny request
+        flask.abort(403)
+    return username
 
 def get_following_users(connection, logname):
     """Get following users from databse."""
@@ -26,6 +55,18 @@ def get_posts(connection, user):
         "FROM posts "
         "WHERE owner = ? ",
         (user,)
+    )
+    return cur.fetchall()
+
+def get_post_only_id(connection, user, post_lte, size, offset):
+    """Get postid from database by username"""
+    cur = connection.execute(
+        "SELECT postid FROM posts "
+        "WHERE (owner = ? OR owner IN "
+        "(SELECT username2 FROM following WHERE username1 = ?))"
+        " AND postid <= ?"
+        "ORDER BY postid DESC LIMIT ? OFFSET ?",
+        (user, user, post_lte, size, offset)
     )
     return cur.fetchall()
 
