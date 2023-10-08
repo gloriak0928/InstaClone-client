@@ -7,7 +7,7 @@ import insta485
 # if a user is not authenticated. 
 # The only exception is /api/v1/, which is publicly available.
 @insta485.app.route('/api/v1/')
-def get_index():
+def get_index_api():
     """Return API resource URLs."""
     context = {
         "comments": "/api/v1/comments/",

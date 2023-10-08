@@ -240,3 +240,13 @@ def get_comment_details_by_postid(connection, postid):
         (postid,)
     )
     return cur.fetchall()
+
+def get_like_details_by_likeid(connection, likeid):
+    """Get like details by likeid"""
+    cur = connection.execute(
+        "SELECT likeid, owner, postid "
+        "FROM likes "
+        "WHERE likeid = ?",
+        (likeid,)
+    )
+    return cur.fetchone()

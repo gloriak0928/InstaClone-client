@@ -9,36 +9,20 @@ from insta485.views.module import get_post_only_id
 from insta485.views.module import liked_post, get_likeid
 from insta485.views.module import get_post_comments, get_likes_count
 from insta485.views.module import get_comment_details_by_postid
+from insta485.views.module import get_owner_image_url
 
 
 # Every REST API route should return 403 
 # if a user is not authenticated. 
 # The only exception is /api/v1/, which is publicly available.
 
-@insta485.app.route('/api/v1/posts/<postid>/')
-def get_one_post():
-    """Return one post, including comments and likes."""
-    # TODO: Need to finish
-
-#这两个好像是同一个东西
+# @insta485.app.route('/api/v1/posts/<postid>/')
+# def get_one_post():
+#     """Return one post, including comments and likes."""
+#     # TODO: Need to finish
 
 @insta485.app.route('/api/v1/posts/<int:postid_url_slug>/')
-def get_post_details(postid_url_slug):
-    """Return one post, including comments and likes.
-
-    Example:
-    {
-      "created": "2017-09-28 04:33:28",
-      "imgUrl": "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg",
-      "owner": "awdeorio",
-      "ownerImgUrl": "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg",
-      "ownerShowUrl": "/users/awdeorio/",
-      "postShowUrl": "/posts/1/",
-      "postid": 1,
-      "url": "/api/v1/posts/1/"
-    }
-    """
-    # FIXME: 不知道这部分是干嘛的
+def get_post_details_api(postid_url_slug):
     connection = insta485.model.get_db()
     username = check_auth(connection)
     post = get_post_with_id(connection, postid_url_slug)
@@ -72,7 +56,7 @@ def get_post_details(postid_url_slug):
         "imgUrl": f"/uploads/{post['img_url']}",
         "likes": likes,
         "owner": username,
-        "ownerImgUrl": "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg",
+        "ownerImgUrl": f"{get_owner_image_url(connection, username)}",
         "ownerShowUrl": f"/users/{username}/",
         "postShowUrl": f"/posts/{postid_url_slug}/",
         "postid": postid_url_slug,
@@ -86,10 +70,9 @@ def get_post_details(postid_url_slug):
     """Return N newest post urls and ids."""
     # TODO: Need to finish
 
-# 这两个好像也是一个东西
 
 @insta485.app.route('/api/v1/posts/')
-def get_N_posts():
+def get_N_posts_api():
     """Return 10 newest post urls and ids."""
     connection = insta485.model.get_db()
     
@@ -118,16 +101,3 @@ def get_N_posts():
                "url": flask.request.path
                }
     return flask.jsonify(**context)
-
-
-@insta485.app.route('/api/v1/posts/?page=N')
-def get_N_pages():
-    """Return N’th page of post urls and ids."""
-    # TODO: Need to finish
-
-
-@insta485.app.route('/api/v1/posts/?postid_lte=N')
-def get_old_posts():
-    """Return post urls and ids no newer than post id N."""
-    # TODO: Need to finish
-
