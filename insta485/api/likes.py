@@ -21,7 +21,6 @@ def post_like_api():
     if not post:
         flask.abort(404)
 
-    # FIXME: 404 page not found
     message_code = 200
     if not likeid:
         connection.execute(
@@ -40,7 +39,7 @@ def post_like_api():
 
 
 @insta485.app.route('/api/v1/likes/<likeid>/', methods=['DELETE'])
-def delete_like(likeid):
+def delete_like_api(likeid):
     """Delete the like based on the like id."""
     connection = insta485.model.get_db()
     username = check_auth(connection)
