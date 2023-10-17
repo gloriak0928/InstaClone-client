@@ -137,20 +137,20 @@ def login():
     if not username or not password:
         flask.abort(400)
 
-    stored_password = get_stored_password_from_db(connection, username)
+    stored_p = get_stored_password_from_db(connection, username)
 
-    if stored_password is None:
+    if stored_p is None:
         flask.abort(403)
 
-    hashed_password = stored_password['password']
+    hashed_password = stored_p['password']
     salt = hashed_password.split('$')[1]
 
     algorithm = 'sha512'
     hash_obj = hashlib.new(algorithm)
-    password_salted = salt + password
-    hash_obj.update(password_salted.encode('utf-8'))
-    password_hash = hash_obj.hexdigest()
-    password_db_string = "$".join([algorithm, salt, password_hash])
+    password_s = salt + password
+    hash_obj.update(password_s.encode('utf-8'))
+    password_h = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_h])
 
     if password_db_string != hashed_password:
         flask.abort(403)
@@ -297,17 +297,17 @@ def update_password():
         "WHERE username = ?",
         (logname,)
     )
-    stored_password = cur.fetchone()
-    hashed_password = stored_password['password']
-    salt = hashed_password.split('$')[1]
+    stored_p = cur.fetchone()
+    stored_p = stored_p['password']
+    salt = stored_p.split('$')[1]
     algorithm = 'sha512'
-    hash_obj = hashlib.new(algorithm)
+    hash_o = hashlib.new(algorithm)
     password_salted = salt + password
-    hash_obj.update(password_salted.encode('utf-8'))
-    password_hash = hash_obj.hexdigest()
-    hash_obj = "$".join([algorithm, salt, password_hash])
+    hash_o.update(password_salted.encode('utf-8'))
+    password_hash = hash_o.hexdigest()
+    hash_o = "$".join([algorithm, salt, password_hash])
 
-    if hash_obj != hashed_password:
+    if hash_o != stored_p:
         flask.abort(403)
     if new_password1 != new_password2:
         flask.abort(401)

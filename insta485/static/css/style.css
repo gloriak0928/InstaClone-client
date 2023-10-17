@@ -1,0 +1,30 @@
+.menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 2px rgb(149, 138, 138) solid;
+    margin-bottom: 20px;
+}
+.profilePicture {
+    height: 20px;
+    width: 20px;
+}
+.userName {
+    font-weight: bold;
+    color: black;
+}
+.timeStamp{
+    color:rgb(149, 138, 138);
+    font-weight: bold;
+    text-align: right;
+}
+.postImage{
+    width: 800px;
+}
+.post{
+    width: 800px;
+    margin: auto;
+    margin-bottom: 20px;
+    border: 1px solid rgb(149, 138, 138);
+}

@@ -4,6 +4,7 @@ import flask
 
 
 def check_auth(connection):
+    """Check for user authentification."""
     if flask.request.authorization:
         # if it contains valid basic auth credentials
         username = flask.request.authorization['username']
@@ -25,10 +26,11 @@ def check_auth(connection):
     elif 'username' in flask.session:
         # if it contains a valid session cookie
         username = flask.session['username']
-    else :
+    else:
         # else: deny request
         flask.abort(403)
     return username
+
 
 def get_following_users(connection, logname):
     """Get following users from databse."""
@@ -58,9 +60,9 @@ def get_posts(connection, user):
     )
     return cur.fetchall()
 
+
 def get_post_only_id(connection, user, post_lte, size, offset):
-    """Get postid from database by username"""
-    
+    """Get postid from database by username."""
     cur = connection.execute(
         "SELECT postid FROM posts "
         "WHERE (owner = ? OR owner IN "
@@ -233,6 +235,7 @@ def check_follow(connection, username1, username2):
     )
     return cur.fetchone()
 
+
 def get_comment_details_by_postid(connection, postid):
     """Return comments information: commentid, owner, postid, text."""
     cur = connection.execute(
@@ -242,8 +245,9 @@ def get_comment_details_by_postid(connection, postid):
     )
     return cur.fetchall()
 
+
 def get_like_details_by_likeid(connection, likeid):
-    """Get like details by likeid"""
+    """Get like details by likeid."""
     cur = connection.execute(
         "SELECT likeid, owner, postid "
         "FROM likes "

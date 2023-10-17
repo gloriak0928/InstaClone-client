@@ -37,6 +37,7 @@
     
 </head>
 
+
 <body>
     <!-- meru bar -->
     <div class="menu">
@@ -44,7 +45,7 @@
         <div>
             <div style="display: flex;">
                 <a href="/">
-                    <img src="/images/ins_logo_black.png" 
+                    <img src="/static/images/ins_logo_black.png" 
                     alt="ins logo" 
                     style="width:42px;height:42px;">
                 </a>
@@ -63,6 +64,15 @@
         </div>
     </div>
 
+    
+    <div id="reactEntry">
+        <!-- jsx-->
+        Loading ...
+    </div>
+    <!-- load JavaScript-->
+    <script type="text/javascript" src="{{url_for('static', filename='js/bundle.js')}}"></script>
+
+    <!-- plina old HTML-->
     <div class="post">
         <div class="menu"> 
             <div> <!--click on username/profile page-->
@@ -128,5 +138,9 @@
           </form>
         {% endif %}
     </div>
+
+    
 </body>
+
+
 </html>

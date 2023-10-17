@@ -7,8 +7,8 @@ from insta485.views.module import get_post_with_id
 from insta485.views.module import get_like_details_by_likeid
 
 
-# Every REST API route should return 403 
-# if a user is not authenticated. 
+# Every REST API route should return 403
+# if a user is not authenticated.
 # The only exception is /api/v1/, which is publicly available.
 @insta485.app.route('/api/v1/likes/', methods=['POST'])
 def post_like_api():
